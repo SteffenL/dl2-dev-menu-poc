@@ -129,7 +129,6 @@ std::filesystem::path getModulePath(HMODULE handle) {
 }
 
 std::basic_string_view<uint8_t> getImageCode(const std::filesystem::path& moduleName) {
-    // TODO: Wide char support
     auto* imageBase{std::bit_cast<uint8_t*>(getModuleHandle(moduleName))};
     if (!imageBase) {
         throw std::runtime_error{"Unable to get handle of module by name: " + moduleName.string()};
