@@ -336,7 +336,7 @@ void onGameDllLoaded() {
 using LoadLibraryExW_t = HMODULE(WINAPI*)(LPCWSTR lpLibFileName, HANDLE hFile, DWORD dwFlags);
 LoadLibraryExW_t g_origLoadLibraryExW{};
 
-using GetProcAddress_t = FARPROC(WINAPI*)(HMODULE hModule, LPCSTR  lpProcName);
+using GetProcAddress_t = FARPROC(WINAPI*)(HMODULE hModule, LPCSTR lpProcName);
 GetProcAddress_t g_origGetProcAddress{};
 
 HMODULE WINAPI detourLoadLibraryExW(LPCWSTR lpLibFileName, HANDLE hFile, DWORD dwFlags) {
@@ -351,7 +351,7 @@ HMODULE WINAPI detourLoadLibraryExW(LPCWSTR lpLibFileName, HANDLE hFile, DWORD d
     return g_origLoadLibraryExW(lpLibFileName, hFile, dwFlags);
 }
 
-FARPROC WINAPI detourGetProcAddress(HMODULE hModule, LPCSTR  lpProcName) {
+FARPROC WINAPI detourGetProcAddress(HMODULE hModule, LPCSTR lpProcName) {
     auto modulePath{getModulePath(hModule)};
     if (hModule == g_dllHandle) {
         auto fixedModulePath{getXinput13Path()};
