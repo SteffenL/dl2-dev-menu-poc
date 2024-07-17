@@ -10,4 +10,4 @@ if not exist "%dev_tools_exe%" (
     exit /b 1
 )
 
-start "" /D "%game_bin_dir%" "%dev_tools_exe%"
+start "" "%dev_tools_exe%"

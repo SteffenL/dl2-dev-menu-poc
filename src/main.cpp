@@ -149,6 +149,10 @@ std::filesystem::path getExePath() {
     return getModulePath(nullptr);
 }
 
+std::filesystem::path getMainBinDir() {
+    return getExePath().parent_path().parent_path().parent_path() / "ph" / "work" / "bin" / "x64";
+}
+
 std::filesystem::path getXinput13Path() {
     return getSystemDir() / "xinput1_3.dll";
 }
@@ -366,6 +370,12 @@ void setSteamAppId() {
     ::SetEnvironmentVariableA("SteamAppId", "534380");
 }
 
+void setWorkingDirectory() {
+    auto workingDir{getMainBinDir()};
+    log("Changing working directory: ", workingDir.string());
+    ::SetCurrentDirectoryW(workingDir.c_str());
+}
+
 void setupGameDllLoadHook() {
     if (::MH_Initialize() != MH_OK) {
         log("Unable to initialize MinHook.");
@@ -404,6 +414,7 @@ void setup() {
     }
 
     setSteamAppId();
+    setWorkingDirectory();
     setupGameDllLoadHook();
 
     if (isGameDllLoaded()) {
