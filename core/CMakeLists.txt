@@ -10,4 +10,4 @@ target_sources(core PRIVATE
 )
 
 target_include_directories(core PUBLIC include)
-target_link_libraries(core PRIVATE -static dbghelp minhook)
+target_link_libraries(core PRIVATE dbghelp minhook)

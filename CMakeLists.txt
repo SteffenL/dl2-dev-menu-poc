@@ -13,7 +13,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
+
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND NOT MSVC)
+    add_link_options(-static)
+endif()
 
 if(MSVC)
     add_compile_options(/utf-8)
