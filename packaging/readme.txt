@@ -2,7 +2,7 @@ A proof of concept for using the developer menu in the Steam version of the Dyin
 
 This approach directly uses DevTools to play the main game with a wrapper DLL that applies some memory editing for enabling the developer menu.
 
-A setup program is included for easy (un)installation for Windows-based environments.
+A setup program is included for easy (un)installation for most Windows-based environments.
 
 Otherwise, just copy the included DLL file to the DevTools bin directory and run dyinglightgame_x64_rwe.exe from the same directory.
 
