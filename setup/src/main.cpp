@@ -199,7 +199,13 @@ int main() {
 
         while (true) {
             const auto choice{promptChoice(std::cout, std::cin, "Enter a number depending on what you would like to do.", defaultChoice, menuEntries)};
-            choice.handler(&state);
+
+            try {
+                choice.handler(&state);
+            } catch (const std::exception& ex) {
+                std::cout << "Error: " << ex.what() << "\n";
+            }
+
             if (state.quit) {
                 return state.exitCode;
             }
