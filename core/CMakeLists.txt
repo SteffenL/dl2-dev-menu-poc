@@ -8,6 +8,7 @@ target_sources(core PRIVATE
     src/main.cpp
     src/registry.cpp
     src/state.cpp
+    src/string.cpp
     src/system.cpp
 )
 

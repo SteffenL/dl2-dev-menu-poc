@@ -97,3 +97,10 @@ std::optional<std::filesystem::path> getGameDevToolsBinDir() {
     }
     return std::nullopt;
 }
+
+std::optional<std::filesystem::path> getGameDevToolsExePath() {
+    if (auto binDir{getGameDevToolsBinDir()}) {
+        return std::make_optional(*binDir / "dyinglightgame_x64_rwe.exe");
+    }
+    return std::nullopt;
+}

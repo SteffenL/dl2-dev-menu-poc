@@ -33,6 +33,22 @@ void uninstallFile(const fs::path& filePath) {
     }
 }
 
+bool desktopShortcutExists(const std::string& label) {
+    return shellShortcutExists(getDesktopDir(), label);
+}
+
+void installDesktopShortcut(const fs::path& filePath, const std::string& label, const std::string& args) {
+    std::cout << "Creating desktop shortcut with label: " << label << "\n";
+    createShellShortcut(filePath, getDesktopDir(), label, args);
+}
+
+void uninstallDesktopShortcut(const std::string& label) {
+    if (shellShortcutExists(getDesktopDir(), label)) {
+        std::cout << "Removing desktop shortcut with label: " << label << "\n";
+        removeShellShortcut(getDesktopDir(), label);
+    }
+}
+
 struct InstallItem {
     fs::path relPath;
     bool install{true};
@@ -46,12 +62,31 @@ std::vector<InstallItem> getInstallItems() {
     return items;
 }
 
+constexpr std::string_view desktopShortcutLabel{"Dying Light 2 with Developer Menu (DevTools)"};
+
+struct DesktopShortcutItem {
+    std::string label;
+};
+
+std::vector<DesktopShortcutItem> getDesktopShortcutItems() {
+    std::vector<DesktopShortcutItem> items;
+    items.emplace_back(std::string{desktopShortcutLabel});
+    return items;
+}
+
 void cmdInstall(void* userData) {
     auto* state{static_cast<AppState*>(userData)};
 
     const auto devToolsBinDir{getGameDevToolsBinDir()};
     if (!devToolsBinDir) {
         std::cout << "Unable to determine DevTools directory.\n";
+        state->exitCode = 1;
+        return;
+    }
+
+    const auto devToolsExePath{getGameDevToolsExePath()};
+    if (!devToolsExePath) {
+        std::cout << "Unable to determine DevTools executable path.\n";
         state->exitCode = 1;
         return;
     }
@@ -85,6 +120,22 @@ void cmdInstall(void* userData) {
         installFile(exeDir / installItem.relPath, targetPath);
     }
 
+    const auto shortcutPrompt{"Would you like to create a shortcut on the desktop?"};
+    const auto makeShortcut{promptYesNo(std::cout, std::cin, shortcutPrompt, YesNoChoice::no) == YesNoChoice::yes};
+    if (makeShortcut) {
+        const std::string label{desktopShortcutLabel};
+        if (desktopShortcutExists(label)) {
+            const auto prompt{"Desktop shortcut already exists:\n\n" + label + "\n\nWould you like to replace it?"};
+            const auto replace{promptYesNo(std::cout, std::cin, prompt, YesNoChoice::no) == YesNoChoice::yes};
+            if (!replace) {
+                std::cout << "Aborted.\n";
+                state->exitCode = 1;
+                return;
+            }
+        }
+        installDesktopShortcut(*devToolsExePath, label, "-nologos");
+    }
+
     std::cout << "Installation completed.\n";
 }
 
@@ -105,6 +156,10 @@ void cmdUninstall(void* userData) {
                   << "Please make sure to install DevTools.\n";
         state->exitCode = 1;
         return;
+    }
+
+    for (const auto& shortcutItem : getDesktopShortcutItems()) {
+        uninstallDesktopShortcut(shortcutItem.label);
     }
 
     const auto& targetDir{*devToolsBinDir};
@@ -134,6 +189,7 @@ int main() {
             {1, "Install", cmdInstall},
             {2, "Uninstall", cmdUninstall},
             {3, "Quit", cmdQuit}};
+        constexpr long defaultChoice{3};
 
         std::cout << "Dying Light 2 Developer Menu PoC Setup\n"
                   << "  by Steffen André Langnes\n"
@@ -142,7 +198,7 @@ int main() {
         AppState state;
 
         while (true) {
-            const auto choice{promptChoice(std::cout, std::cin, "Enter a number depending on what you would like to do.", 3, menuEntries)};
+            const auto choice{promptChoice(std::cout, std::cin, "Enter a number depending on what you would like to do.", defaultChoice, menuEntries)};
             choice.handler(&state);
             if (state.quit) {
                 return state.exitCode;

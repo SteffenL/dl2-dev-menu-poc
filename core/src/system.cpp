@@ -1,10 +1,23 @@
 #include "core/system.hpp"
+#include "core/string.hpp"
+
+#include "ScopedCoInitialize.hpp"
 
 #include <array>
+#include <filesystem>
 #include <stdexcept>
 
 #include <windows.h>
+#include <wrl.h>
 #include <dbghelp.h>
+#include <shlobj.h>
+#include <wrl/client.h>
+
+std::filesystem::path makeShortcutFileName(const std::string& label) {
+    auto normalizedLabel{std::filesystem::u8path(label).filename()};
+    normalizedLabel += ".lnk";
+    return normalizedLabel;
+}
 
 void* getModuleHandle(const std::filesystem::path& moduleName) {
     return ::GetModuleHandleW(moduleName.c_str());
@@ -41,10 +54,65 @@ std::filesystem::path getExeDir() {
     return getExePath().parent_path();
 }
 
+std::filesystem::path getDesktopDir() {
+    PWSTR desktopPath{};
+    if (::SHGetKnownFolderPath(FOLDERID_Desktop, KF_FLAG_DEFAULT, NULL, &desktopPath) != S_OK) {
+        throw std::runtime_error{"Unable to get desktop path"};
+    }
+    std::filesystem::path result{desktopPath};
+    ::CoTaskMemFree(desktopPath);
+    return result;
+}
+
 void setEnv(const std::string& name, const std::string& value) {
     ::SetEnvironmentVariableA(name.c_str(), value.c_str());
 }
 
 void setWorkingDirectory(const std::filesystem::path& dir) {
     ::SetCurrentDirectoryW(dir.c_str());
+}
+
+void createShellShortcut(const std::filesystem::path& targetPath, const std::filesystem::path& directory, const std::string& label, const std::string& args) {
+    ScopedCoInitialize coinit{COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE};
+
+    IShellLinkW* shellLink_{};
+    auto hr{CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLinkW, std::bit_cast<LPVOID*>(&shellLink_))};
+    if (FAILED(hr)) {
+        throw std::runtime_error{"CoCreateInstance failed"};
+    }
+
+    Microsoft::WRL::ComPtr<IShellLinkW> shellLink{shellLink_};
+    shellLink_->Release();
+
+    hr = shellLink->SetPath(targetPath.c_str());
+    if (FAILED(hr)) {
+        throw std::runtime_error{"IShellLink::SetPath failed"};
+    }
+
+    auto wargs{widenString(args)};
+    hr = shellLink->SetArguments(wargs.c_str());
+    if (FAILED(hr)) {
+        throw std::runtime_error{"IShellLink::SetArguments failed"};
+    }
+
+    Microsoft::WRL::ComPtr<IPersistFile> persistFile;
+
+    hr = shellLink.As(&persistFile);
+    if (FAILED(hr)) {
+        throw std::runtime_error{"ComPtr<IShellLink>::As<IPersistFile> failed"};
+    }
+
+    const auto linkName{directory / makeShortcutFileName(label)};
+    hr = persistFile->Save(linkName.c_str(), TRUE);
+    if (FAILED(hr)) {
+        throw std::runtime_error{"IPersistFile::Save failed"};
+    }
+}
+
+bool shellShortcutExists(const std::filesystem::path& directory, const std::string& label) {
+    return std::filesystem::exists(directory / makeShortcutFileName(label));
+}
+
+void removeShellShortcut(const std::filesystem::path& directory, const std::string& label) {
+    std::filesystem::remove(directory / makeShortcutFileName(label));
 }
