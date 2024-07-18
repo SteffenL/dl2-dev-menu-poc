@@ -14,6 +14,7 @@ using PXINPUT_KEYSTROKE = XINPUT_KEYSTROKE*;
 #include <memory>
 #include <sstream>
 #include <stdexcept>
+#include <span>
 #include <string>
 #include <type_traits>
 
@@ -74,7 +75,7 @@ constexpr size_t getEffectiveCharCountInPattern(const std::string_view pattern) 
 }
 
 template<typename T>
-constexpr auto search(const std::basic_string_view<T> range, const std::string_view pattern) -> typename decltype(range)::iterator {
+constexpr auto search(const std::span<T> range, const std::string_view pattern) -> typename decltype(range)::iterator {
     auto rbegin{range.begin()};
     const auto rend{range.end()};
     const auto pbegin{pattern.begin()};
@@ -128,7 +129,7 @@ std::filesystem::path getModulePath(HMODULE handle) {
     return std::filesystem::path{exePath.begin(), exePath.begin() + length};
 }
 
-std::basic_string_view<uint8_t> getImageCode(const std::filesystem::path& moduleName) {
+std::span<uint8_t> getImageCode(const std::filesystem::path& moduleName) {
     auto* imageBase{std::bit_cast<uint8_t*>(getModuleHandle(moduleName))};
     if (!imageBase) {
         throw std::runtime_error{"Unable to get handle of module by name: " + moduleName.string()};
@@ -136,7 +137,7 @@ std::basic_string_view<uint8_t> getImageCode(const std::filesystem::path& module
     auto* ntHeaders{::ImageNtHeader(imageBase)};
     auto* baseOfCode{imageBase + ntHeaders->OptionalHeader.BaseOfCode};
     auto sizeOfCode{ntHeaders->OptionalHeader.SizeOfCode};
-    return std::basic_string_view<uint8_t>{baseOfCode, baseOfCode + sizeOfCode};
+    return std::span<uint8_t>{baseOfCode, baseOfCode + sizeOfCode};
 }
 
 std::filesystem::path getSystemDir() {
@@ -284,7 +285,7 @@ std::string hexNumber(T value, const std::string_view prefix = "0x") noexcept {
 }
 
 template<typename T>
-bool* findCheatsEnabledVariable(const std::basic_string_view<T> range) {
+bool* findCheatsEnabledVariable(const std::span<T> range) {
     /*
     .text:0000000181C63383 E8 68 17 13 00                                call    sub_181D94AF0
     .text:0000000181C63388 84 C0                                         test    al, al
