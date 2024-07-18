@@ -9,5 +9,6 @@ std::filesystem::path getModulePath(void* handle);
 std::span<uint8_t> getImageCode(const std::filesystem::path& moduleName);
 std::filesystem::path getSystemDir();
 std::filesystem::path getExePath();
+std::filesystem::path getExeDir();
 void setEnv(const std::string& name, const std::string& value);
 void setWorkingDirectory(const std::filesystem::path& dir);

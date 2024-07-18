@@ -37,6 +37,10 @@ std::filesystem::path getExePath() {
     return getModulePath(nullptr);
 }
 
+std::filesystem::path getExeDir() {
+    return getExePath().parent_path();
+}
+
 void setEnv(const std::string& name, const std::string& value) {
     ::SetEnvironmentVariableA(name.c_str(), value.c_str());
 }

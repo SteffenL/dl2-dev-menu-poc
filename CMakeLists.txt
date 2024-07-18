@@ -34,4 +34,5 @@ FetchContent_MakeAvailable(minhook)
 
 add_subdirectory(core)
 add_subdirectory(wrapper)
+add_subdirectory(setup)
 add_subdirectory(packaging)

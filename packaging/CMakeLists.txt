@@ -8,10 +8,7 @@ set(CPACK_COMPONENTS_ALL dl2_dev_menu)
 set(CPACK_GENERATOR ZIP)
 
 install(TARGETS wrapper DESTINATION .)
-
-install(FILES scripts/install.bat DESTINATION . COMPONENT dl2_dev_menu)
-install(FILES scripts/start_game.bat DESTINATION . COMPONENT dl2_dev_menu)
-install(FILES scripts/uninstall.bat DESTINATION . COMPONENT dl2_dev_menu)
+install(TARGETS setup DESTINATION .)
 install(FILES readme.txt DESTINATION . COMPONENT dl2_dev_menu)
 
 include(CPack)

@@ -1,10 +1,12 @@
 add_library(core)
 
 target_sources(core PRIVATE
+    src/cli.cpp
     src/game.cpp
     src/hooks.cpp
     src/log.cpp
     src/main.cpp
+    src/registry.cpp
     src/state.cpp
     src/system.cpp
 )
