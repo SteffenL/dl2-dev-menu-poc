@@ -16,6 +16,7 @@ using PXINPUT_KEYSTROKE = XINPUT_KEYSTROKE*;
 #include <stdexcept>
 #include <span>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include <MinHook.h>
