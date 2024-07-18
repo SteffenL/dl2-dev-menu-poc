@@ -4,6 +4,8 @@ A proof of concept for using the developer menu in the Steam version of the Dyin
 
 This approach directly uses DevTools to play the main game with a wrapper DLL that applies some memory editing for enabling the developer menu.
 
+No game files are modified, and no files from the game are redistributed. Online features are and should remain unavailable.
+
 ## Building
 
 ```
