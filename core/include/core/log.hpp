@@ -1,18 +1,16 @@
 #pragma once
 
 #include <cstdlib>
-#include <string_view>
+#include <functional>
 #include <ostream>
 
-const std::string_view getLogTag() noexcept;
-std::ostream& getLogStream();
+void makeLogScope(std::function<void(std::ostream& os)> cb);
 
 template<typename... Args>
 void log(Args&&... args) {
-    auto& os{getLogStream()};
-    os << getLogTag();
-    ((os << std::forward<Args>(args)), ...);
-    os << std::endl;
+    makeLogScope([&] (std::ostream& os) {
+        ((os << std::forward<Args>(args)), ...);
+    });
 }
 
 template<typename T>
