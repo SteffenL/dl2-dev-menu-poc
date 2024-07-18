@@ -1,4 +1,5 @@
 #include "core/hooks.hpp"
+#include "core/string.hpp"
 
 #include "core/log.hpp"
 #include "core/state.hpp"
@@ -15,7 +16,7 @@ GetProcAddress_t g_origGetProcAddress{};
 
 HMODULE WINAPI detourLoadLibraryExW(LPCWSTR lpLibFileName, HANDLE hFile, DWORD dwFlags) {
     std::filesystem::path libfileName{lpLibFileName};
-    log("LoadLibraryExW: ", libfileName.string());
+    log("LoadLibraryExW: ", charStringFromChar8String(libfileName.u8string()));
     if (libfileName.filename() == "gamedll_ph_x64_rwe.dll") {
         log("Game DLL is being loaded.");
         auto module{g_origLoadLibraryExW(lpLibFileName, hFile, dwFlags)};
@@ -29,7 +30,7 @@ FARPROC WINAPI detourGetProcAddress(HMODULE hModule, LPCSTR lpProcName) {
     auto modulePath{getModulePath(hModule)};
     if (hModule == AppState::get().getDllHandle()) {
         auto fixedModulePath{getXinput13Path()};
-        log("Shenanigan: GetProcAddress was used on us. Redirecting to module: ", fixedModulePath.string());
+        log("Shenanigan: GetProcAddress was used on us. Redirecting to module: ", charStringFromChar8String(fixedModulePath.u8string()));
         hModule = std::bit_cast<HMODULE>(getModuleHandle(fixedModulePath));
         return g_origGetProcAddress(hModule, lpProcName);
     }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/log.hpp"
+#include "core/string.hpp"
 #include "core/system.hpp"
 
 #include <string>
@@ -86,7 +87,7 @@ private:
 
     static HMODULE loadXinput13Dll() {
         auto origDllPath{getXinput13Path()};
-        log("Loading xinput DLL: ", origDllPath.string());
+        log("Loading xinput DLL: ", charStringFromChar8String(origDllPath.u8string()));
         auto module{::LoadLibraryExW(origDllPath.c_str(), nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32)};
         if (!module) {
             log("Unable to load xinput DLL.");

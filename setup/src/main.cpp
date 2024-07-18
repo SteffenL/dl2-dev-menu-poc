@@ -1,5 +1,6 @@
 #include "core/cli.hpp"
 #include "core/game.hpp"
+#include "core/string.hpp"
 #include "core/system.hpp"
 
 #include <filesystem>
@@ -19,16 +20,16 @@ namespace fs = std::filesystem;
 void installFile(const fs::path& filePath, const fs::path& targetPath) {
     const auto targetDir{targetPath.parent_path()};
     if (!fs::is_directory(targetDir)) {
-        std::cout << "Creating directory: " << targetDir.string() << "\n";
+        std::cout << "Creating directory: " << charStringFromChar8String(targetDir.u8string()) << "\n";
         fs::create_directories(targetDir);
     }
-    std::cout << "Copying file: " << filePath.string() << "\n";
+    std::cout << "Copying file: " << charStringFromChar8String(filePath.u8string()) << "\n";
     fs::copy_file(filePath, targetPath, fs::copy_options::overwrite_existing);
 }
 
 void uninstallFile(const fs::path& filePath) {
     if (fs::exists(filePath)) {
-        std::cout << "Removing file: " << filePath.string() << "\n";
+        std::cout << "Removing file: " << charStringFromChar8String(filePath.u8string()) << "\n";
         fs::remove(filePath);
     }
 }
@@ -93,7 +94,7 @@ void cmdInstall(void* userData) {
 
     if (!fs::is_directory(*devToolsBinDir)) {
         std::cout << "DevTools was not found at the expected locations:\n\n"
-                  << devToolsBinDir->string()
+                  << charStringFromChar8String(devToolsBinDir->u8string())
                   << "\n\n"
                   << "Please make sure to install DevTools.\n";
         state->exitCode = 1;
@@ -109,7 +110,7 @@ void cmdInstall(void* userData) {
         }
         const auto targetPath{targetDir / installItem.relPath};
         if (fs::exists(targetPath)) {
-            const auto prompt{"File already exists:\n\n" + targetPath.string() + "\n\nWould you like to replace it?"};
+            const auto prompt{"File already exists:\n\n" + charStringFromChar8String(targetPath.u8string()) + "\n\nWould you like to replace it?"};
             const auto replace{promptYesNo(std::cout, std::cin, prompt, YesNoChoice::no) == YesNoChoice::yes};
             if (!replace) {
                 std::cout << "Aborted.\n";
@@ -151,7 +152,7 @@ void cmdUninstall(void* userData) {
 
     if (!fs::is_directory(*devToolsBinDir)) {
         std::cout << "DevTools was not found at the expected locations:\n\n"
-                  << devToolsBinDir->string()
+                  << charStringFromChar8String(devToolsBinDir->u8string())
                   << "\n\n"
                   << "Please make sure to install DevTools.\n";
         state->exitCode = 1;

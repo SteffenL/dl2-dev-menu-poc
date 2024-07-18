@@ -62,3 +62,12 @@ std::basic_string<T> narrowBasicString(const std::wstring_view input) {
 std::string narrowString(const std::wstring_view input) {
     return narrowBasicString<char>(input);
 }
+
+std::string charStringFromChar8String(const std::u8string_view from) {
+    std::string result;
+    result.reserve(from.size());
+    for (auto c : from) {
+        result.push_back(static_cast<char>(c));
+    }
+    return result;
+}

@@ -3,6 +3,7 @@
 #include "core/hooks.hpp"
 #include "core/log.hpp"
 #include "core/state.hpp"
+#include "core/string.hpp"
 #include "core/system.hpp"
 
 #include <windows.h>
@@ -15,7 +16,7 @@ void setup() {
 
     const auto exePath{getExePath()};
     if (exePath.filename() != "dyinglightgame_x64_rwe.exe") {
-        log("Unexpected game EXE: ", exePath.string());
+        log("Unexpected game EXE: ", charStringFromChar8String(exePath.u8string()));
     }
 
     setGameSteamAppId();

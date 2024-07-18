@@ -4,6 +4,7 @@
 #include "core/log.hpp"
 #include "core/registry.hpp"
 #include "core/search.hpp"
+#include "core/string.hpp"
 #include "core/system.hpp"
 
 std::filesystem::path getMainBinDir() {
@@ -65,7 +66,7 @@ void setGameSteamAppId() {
 
 void setGameWorkingDirectory() {
     auto workingDir{getMainBinDir()};
-    log("Changing working directory: ", workingDir.string());
+    log("Changing working directory: ", charStringFromChar8String(workingDir.u8string()));
     setWorkingDirectory(workingDir);
 }
 
@@ -79,7 +80,7 @@ std::optional<std::filesystem::path> getSteamInstallDir() {
 
 std::optional<std::filesystem::path> getSteamAppsDir() {
     if (auto appsDir{getSteamInstallDir()}) {
-        return std::make_optional(*appsDir / "steamapps" /  "common");
+        return std::make_optional(*appsDir / "steamapps" / "common");
     }
     return std::nullopt;
 }

@@ -32,7 +32,7 @@ std::filesystem::path getModulePath(void* handle) {
 std::span<uint8_t> getImageCode(const std::filesystem::path& moduleName) {
     auto* imageBase{std::bit_cast<uint8_t*>(getModuleHandle(moduleName))};
     if (!imageBase) {
-        throw std::runtime_error{"Unable to get handle of module by name: " + moduleName.string()};
+        throw std::runtime_error{"Unable to get handle of module by name: " + charStringFromChar8String(moduleName.u8string())};
     }
     auto* ntHeaders{::ImageNtHeader(imageBase)};
     auto* baseOfCode{imageBase + ntHeaders->OptionalHeader.BaseOfCode};
@@ -65,7 +65,9 @@ std::filesystem::path getDesktopDir() {
 }
 
 void setEnv(const std::string& name, const std::string& value) {
-    ::SetEnvironmentVariableA(name.c_str(), value.c_str());
+    const auto wname{widenString(name)};
+    const auto wvalue{widenString(value)};
+    ::SetEnvironmentVariableW(wname.c_str(), wvalue.c_str());
 }
 
 void setWorkingDirectory(const std::filesystem::path& dir) {
