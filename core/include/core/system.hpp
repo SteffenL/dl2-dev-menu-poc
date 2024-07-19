@@ -4,7 +4,6 @@
 #include <span>
 #include <string>
 #include <vector>
-#include <fstream>
 
 void* getModuleHandle(const std::filesystem::path& moduleName);
 std::filesystem::path getModulePath(void* handle);

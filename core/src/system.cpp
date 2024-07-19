@@ -5,6 +5,7 @@
 
 #include <array>
 #include <filesystem>
+#include <fstream>
 #include <stdexcept>
 
 #include <windows.h>
