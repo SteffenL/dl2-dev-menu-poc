@@ -20,7 +20,7 @@ void setup() {
     }
 
     setGameSteamAppId();
-	CheckVideoSetting();
+    CheckVideoSetting();
     setGameWorkingDirectory();
 
     AppState::get().setOnGameDllLoadedHandler([] {
