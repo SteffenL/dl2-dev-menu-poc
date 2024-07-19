@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.4.0 - 2024-07-19
+
 ### Changed
 
 - Improved redirection of D3D12Core.dll by intercepting the low level function LdrLoadDll instead of LoadLibraryW.
