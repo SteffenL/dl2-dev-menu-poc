@@ -4,8 +4,6 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-## 0.3.0 - 2024-07-19
-
 ### Fixed
 
 - Issues with some settings causing crashes.
