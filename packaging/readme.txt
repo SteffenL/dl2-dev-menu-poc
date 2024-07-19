@@ -4,7 +4,7 @@ This approach directly uses DevTools to play the main game with a wrapper DLL th
 
 A setup program is included for easy (un)installation for most Windows-based environments.
 
-Otherwise, just copy the included xinput1_3.dll file to the DevTools bin directory and run dyinglightgame_x64_rwe.exe from the same directory.
+Otherwise, just copy files from the included "files" directoory into the DevTools bin directory and run dyinglightgame_x64_rwe.exe from the same directory.
 
 Contact information:
 Steffen André Langnes

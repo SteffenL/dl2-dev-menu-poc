@@ -122,7 +122,7 @@ void cmdInstall(void* userData) {
                 return;
             }
         }
-        installFile(exeDir / installItem.relPath, targetPath);
+        installFile(exeDir / "files" / installItem.relPath, targetPath);
     }
 
     const auto shortcutPrompt{"Would you like to create a shortcut on the desktop?"};
