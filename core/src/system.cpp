@@ -89,7 +89,6 @@ bool ReplaceRendererMode(const std::wstring& filePath, const std::wstring& from,
         return false;
     }
 
-    // 替换内容
     while (startPos != std::wstring::npos) {
         content.replace(startPos, from.length(), to);
         startPos = content.find(from, startPos + to.length());
