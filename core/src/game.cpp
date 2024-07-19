@@ -38,6 +38,24 @@ bool* findCheatsEnabledVariable(const std::span<uint8_t> range) {
     return std::bit_cast<bool*>(absAddr);
 }
 
+void CheckVideoSetting() {
+	std::wstring documentsPath = GetDocumentsFolderPath(); 
+
+	if (!documentsPath.empty()) {
+		std::wstring targetFilePath = documentsPath + L"\\Dying Light 2\\out\\settings\\video.scr";
+		bool result = ReplaceRendererMode(targetFilePath, L"RendererMode(\"d3d12\")", L"RendererMode(\"d3d11\")");
+		if (result) {
+			log("Renderer mode has been successfully updated.");
+		}
+		else {
+			log("No changes were made.");
+		}
+	}
+	else {
+		log("Failed to get the Documents folder path.");
+	}
+}
+
 void setupCheats() {
     log("Finding code of game DLL.");
     auto code{getImageCode("gamedll_ph_x64_rwe.dll")};

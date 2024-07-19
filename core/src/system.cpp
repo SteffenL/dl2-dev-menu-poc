@@ -64,6 +64,48 @@ std::filesystem::path getDesktopDir() {
     return result;
 }
 
+std::wstring GetDocumentsFolderPath() {
+	wchar_t path[MAX_PATH];
+	if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, path))) {
+		return std::wstring(path);
+	}
+	else {
+		return std::wstring();
+	}
+}
+
+bool ReplaceRendererMode(const std::wstring& filePath, const std::wstring& from, const std::wstring& to) {
+	std::wifstream fileIn(filePath);
+	if (!fileIn.is_open()) {
+		return false;
+	}
+
+	std::wstringstream buffer;
+	buffer << fileIn.rdbuf();
+	std::wstring content = buffer.str();
+	fileIn.close();
+
+	size_t startPos = content.find(from);
+	if (startPos == std::wstring::npos) {
+		return false;
+	}
+
+	// 替换内容
+	while (startPos != std::wstring::npos) {
+		content.replace(startPos, from.length(), to);
+		startPos = content.find(from, startPos + to.length());
+	}
+
+	std::wofstream fileOut(filePath);
+	if (!fileOut.is_open()) {
+		return false;
+	}
+
+	fileOut << content;
+	fileOut.close();
+	return true;
+}
+
 void setEnv(const std::string& name, const std::string& value) {
     const auto wname{widenString(name)};
     const auto wvalue{widenString(value)};

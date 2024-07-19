@@ -4,6 +4,7 @@
 #include <span>
 #include <string>
 #include <vector>
+#include <fstream>
 
 void* getModuleHandle(const std::filesystem::path& moduleName);
 std::filesystem::path getModulePath(void* handle);
@@ -12,6 +13,8 @@ std::filesystem::path getSystemDir();
 std::filesystem::path getExePath();
 std::filesystem::path getExeDir();
 std::filesystem::path getDesktopDir();
+std::wstring GetDocumentsFolderPath();
+bool ReplaceRendererMode(const std::wstring& filePath, const std::wstring& from, const std::wstring& to);
 void setEnv(const std::string& name, const std::string& value);
 void setWorkingDirectory(const std::filesystem::path& dir);
 void createShellShortcut(const std::filesystem::path& targetPath, const std::filesystem::path& directory, const std::string& label, const std::string& args = {});

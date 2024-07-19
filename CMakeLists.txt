@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 
 project(
     dl2_dev_menu
-    VERSION 0.2.0
+    VERSION 0.3.0
     DESCRIPTION "A proof of concept for using the developer menu in the Steam version of the Dying Light 2 game by Techland."
     HOMEPAGE_URL https://www.steffenl.com/
     LANGUAGES CXX
@@ -26,7 +26,7 @@ endif()
 include(FetchContent)
 
 FetchContent_Declare(minhook
-    GIT_REPOSITORY git@github.com:TsudaKageyu/minhook.git
+    GIT_REPOSITORY https://github.com/TsudaKageyu/minhook.git
     GIT_TAG 91cc9466e383d13a43d7cf33c7c8fdccb27095d3 # CMake support unavailable in v1.3.3 and older
     EXCLUDE_FROM_ALL
 )

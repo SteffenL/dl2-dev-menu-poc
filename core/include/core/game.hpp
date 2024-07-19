@@ -9,6 +9,7 @@ std::filesystem::path getMainBinDir();
 bool* findCheatsEnabledVariable(const std::span<uint8_t> range);
 void setupCheats();
 bool isGameDllLoaded();
+void CheckVideoSetting();
 void setGameSteamAppId();
 void setGameWorkingDirectory();
 std::optional<std::filesystem::path> getSteamInstallDir();
