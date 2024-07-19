@@ -8,7 +8,6 @@
 #include <string_view>
 
 namespace {
-constexpr std::string_view logTag{"[sl_dl2_dev_menu] "};
 constexpr std::string_view logFileName{"sl_dl2_dev_menu.txt"};
 }
 
@@ -25,7 +24,6 @@ void makeLogScope(std::function<void(std::ostream& os)> cb) {
     static std::mutex mutex;
     std::scoped_lock lock{mutex};
     auto& os{getLogStream()};
-    os << logTag;
     cb(os);
     os << std::endl;
 }

@@ -44,5 +44,5 @@ target_sources(wrapper PRIVATE
     "${CMAKE_CURRENT_BINARY_DIR}/version.rc"
 )
 
-target_link_libraries(wrapper PRIVATE core)
+target_link_libraries(wrapper PRIVATE core main)
 set_target_properties(wrapper PROPERTIES OUTPUT_NAME xinput1_3)

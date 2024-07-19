@@ -1,7 +1,6 @@
 #pragma once
 
 #include <filesystem>
-#include <optional>
 #include <span>
 
 std::filesystem::path getMainBinDir();
@@ -12,7 +11,3 @@ bool isGameDllLoaded();
 void CheckVideoSetting();
 void setGameSteamAppId();
 void setGameWorkingDirectory();
-std::optional<std::filesystem::path> getSteamInstallDir();
-std::optional<std::filesystem::path> getGameInstallDir();
-std::optional<std::filesystem::path> getGameDevToolsBinDir();
-std::optional<std::filesystem::path> getGameDevToolsExePath();

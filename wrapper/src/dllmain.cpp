@@ -1,5 +1,4 @@
-#include "core/main.hpp"
-
+#include "main/main.hpp"
 #include "core/log.hpp"
 #include "core/state.hpp"
 

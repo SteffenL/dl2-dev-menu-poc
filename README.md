@@ -6,10 +6,15 @@ This approach directly uses DevTools to play the main game with a wrapper DLL th
 
 No game files are modified, and no files from the game are redistributed. Online features are and should remain unavailable.
 
+## Prerequisites
+
+* Compiler supporting C++20 (VC++ 2022).
+* Steamworks SDK (1.60).
+
 ## Building
 
 ```
-cmake -G Ninja -B build -S . -DCMAKE_BUILD_TYPE=Release
+cmake -G Ninja -B build -S . -DCMAKE_BUILD_TYPE=Release -Dsteamworks_ROOT=<Steamworks SDK path>
 cmake --build build --target package
 ```
 

@@ -2,10 +2,11 @@
 
 #include "core/hex.hpp"
 #include "core/log.hpp"
-#include "core/registry.hpp"
 #include "core/search.hpp"
 #include "core/string.hpp"
 #include "core/system.hpp"
+
+#include <string>
 
 std::filesystem::path getMainBinDir() {
     return getExePath().parent_path().parent_path().parent_path() / "ph" / "work" / "bin" / "x64";
@@ -76,48 +77,8 @@ bool isGameDllLoaded() {
     return !!getModuleHandle("gamedll_ph_x64_rwe.dll");
 }
 
-void setGameSteamAppId() {
-    setEnv("SteamAppId", "534380");
-}
-
 void setGameWorkingDirectory() {
     auto workingDir{getMainBinDir()};
     log("Changing working directory: ", charStringFromChar8String(workingDir.u8string()));
     setWorkingDirectory(workingDir);
-}
-
-std::optional<std::filesystem::path> getSteamInstallDir() {
-    RegKey reg{HKEY_LOCAL_MACHINE, L"SOFTWARE\\Valve\\Steam", 0, KEY_READ | KEY_WOW64_32KEY};
-    if (auto installPath{reg.queryString(L"InstallPath")}) {
-        return std::make_optional(*installPath);
-    }
-    return std::nullopt;
-}
-
-std::optional<std::filesystem::path> getSteamAppsDir() {
-    if (auto appsDir{getSteamInstallDir()}) {
-        return std::make_optional(*appsDir / "steamapps" / "common");
-    }
-    return std::nullopt;
-}
-
-std::optional<std::filesystem::path> getGameInstallDir() {
-    if (auto steamDir{getSteamAppsDir()}) {
-        return std::make_optional(*steamDir / "Dying Light 2");
-    }
-    return std::nullopt;
-}
-
-std::optional<std::filesystem::path> getGameDevToolsBinDir() {
-    if (auto gameDir{getGameInstallDir()}) {
-        return std::make_optional(*gameDir / "DevTools" / "bin");
-    }
-    return std::nullopt;
-}
-
-std::optional<std::filesystem::path> getGameDevToolsExePath() {
-    if (auto binDir{getGameDevToolsBinDir()}) {
-        return std::make_optional(*binDir / "dyinglightgame_x64_rwe.exe");
-    }
-    return std::nullopt;
 }

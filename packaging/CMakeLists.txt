@@ -7,7 +7,7 @@ set(CPACK_VERBATIM_VARIABLES YES)
 set(CPACK_COMPONENTS_ALL dl2_dev_menu)
 set(CPACK_GENERATOR ZIP)
 
-install(TARGETS wrapper DESTINATION .)
+install(TARGETS wrapper DESTINATION files)
 install(TARGETS setup DESTINATION .)
 install(FILES readme.txt DESTINATION . COMPONENT dl2_dev_menu)
 

@@ -5,7 +5,6 @@ target_sources(core PRIVATE
     src/game.cpp
     src/hooks.cpp
     src/log.cpp
-    src/main.cpp
     src/registry.cpp
     src/state.cpp
     src/string.cpp

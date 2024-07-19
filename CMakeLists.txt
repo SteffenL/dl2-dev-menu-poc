@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 
 project(
     dl2_dev_menu
-    VERSION 0.3.0
+    VERSION 0.4.0
     DESCRIPTION "A proof of concept for using the developer menu in the Steam version of the Dying Light 2 game by Techland."
     HOMEPAGE_URL https://www.steffenl.com/
     LANGUAGES CXX
@@ -32,7 +32,12 @@ FetchContent_Declare(minhook
 )
 FetchContent_MakeAvailable(minhook)
 
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 add_subdirectory(core)
+add_subdirectory(steam)
+add_subdirectory(steam_game)
+add_subdirectory(main)
 add_subdirectory(wrapper)
 add_subdirectory(setup)
 add_subdirectory(packaging)
