@@ -41,7 +41,8 @@ FARPROC WINAPI detourGetProcAddress(HMODULE hModule, LPCSTR lpProcName) {
     auto modulePath{getModulePath(hModule)};
     if (hModule == AppState::get().getDllHandle()) {
         auto fixedModulePath{getXinput13Path()};
-        log("Shenanigan: GetProcAddress was used on us. Redirecting to module: ", charStringFromChar8String(fixedModulePath.u8string()));
+        // Temporarily disabled due to spam
+        //log("Shenanigan: GetProcAddress was used on us. Redirecting to module: ", charStringFromChar8String(fixedModulePath.u8string()));
         hModule = std::bit_cast<HMODULE>(getModuleHandle(fixedModulePath));
         return g_origGetProcAddress(hModule, lpProcName);
     }
