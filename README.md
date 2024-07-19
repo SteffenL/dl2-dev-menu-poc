@@ -9,7 +9,7 @@ No game files are modified, and no files from the game are redistributed. Online
 ## Building
 
 ```
-cmake -G Ninja -B build -S . -DCMAKE_BUILD_TYPE=Release
+cmake -G Ninja -B build -S . -DCMAKE_BUILD_TYPE=Release -Dsteamworks_ROOT=<Steamworks SDK path>
 cmake --build build --target package
 ```
 

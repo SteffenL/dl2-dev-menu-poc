@@ -2,13 +2,13 @@
 #include "core/game.hpp"
 #include "core/string.hpp"
 #include "core/system.hpp"
+#include "steam/SteamApi.hpp"
 
 #include <filesystem>
 #include <iostream>
 #include <vector>
 
 #include <windows.h>
-#include <winnls.h>
 
 struct AppState {
     bool quit{};
@@ -85,18 +85,21 @@ void cmdInstall(void* userData) {
         return;
     }
 
-    const auto devToolsExePath{getGameDevToolsExePath()};
-    if (!devToolsExePath) {
-        std::cout << "Unable to determine DevTools executable path.\n";
+    if (!fs::is_directory(*devToolsBinDir)) {
+        if (!SteamApi::isSteamRunning()) {
+            std::cout << "Warning: Steam should be running to enable accurate detection.\n\n";
+        }
+        std::cout << "DevTools were not found at the expected locations:\n\n"
+                  << charStringFromChar8String(devToolsBinDir->u8string())
+                  << "\n\n"
+                  << "Please make sure that DevTools are installed.\n";
         state->exitCode = 1;
         return;
     }
 
-    if (!fs::is_directory(*devToolsBinDir)) {
-        std::cout << "DevTools was not found at the expected locations:\n\n"
-                  << charStringFromChar8String(devToolsBinDir->u8string())
-                  << "\n\n"
-                  << "Please make sure to install DevTools.\n";
+    const auto devToolsExePath{getGameDevToolsExePath()};
+    if (!devToolsExePath) {
+        std::cout << "Unable to determine DevTools executable path.\n";
         state->exitCode = 1;
         return;
     }
@@ -151,10 +154,13 @@ void cmdUninstall(void* userData) {
     }
 
     if (!fs::is_directory(*devToolsBinDir)) {
-        std::cout << "DevTools was not found at the expected locations:\n\n"
+        if (!SteamApi::isSteamRunning()) {
+            std::cout << "Warning: Steam should be running to enable accurate detection.\n\n";
+        }
+        std::cout << "DevTools were not found at the expected locations:\n\n"
                   << charStringFromChar8String(devToolsBinDir->u8string())
                   << "\n\n"
-                  << "Please make sure to install DevTools.\n";
+                  << "Please make sure that DevTools are installed.\n";
         state->exitCode = 1;
         return;
     }

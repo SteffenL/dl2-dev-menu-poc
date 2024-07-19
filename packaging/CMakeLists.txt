@@ -8,7 +8,6 @@ set(CPACK_COMPONENTS_ALL dl2_dev_menu)
 set(CPACK_GENERATOR ZIP)
 
 install(TARGETS wrapper DESTINATION .)
-install(TARGETS setup DESTINATION .)
 install(FILES readme.txt DESTINATION . COMPONENT dl2_dev_menu)
 
 include(CPack)

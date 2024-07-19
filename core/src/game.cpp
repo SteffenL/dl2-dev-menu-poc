@@ -6,6 +6,11 @@
 #include "core/search.hpp"
 #include "core/string.hpp"
 #include "core/system.hpp"
+#include "steam/SteamApi.hpp"
+
+#include <string>
+
+constexpr const unsigned int gameSteamAppId{534380};
 
 std::filesystem::path getMainBinDir() {
     return getExePath().parent_path().parent_path().parent_path() / "ph" / "work" / "bin" / "x64";
@@ -61,7 +66,7 @@ bool isGameDllLoaded() {
 }
 
 void setGameSteamAppId() {
-    setEnv("SteamAppId", "534380");
+    setEnv("SteamAppId", std::to_string(gameSteamAppId));
 }
 
 void setGameWorkingDirectory() {
@@ -85,10 +90,33 @@ std::optional<std::filesystem::path> getSteamAppsDir() {
     return std::nullopt;
 }
 
+std::optional<std::filesystem::path> getGameInstallDirFromRegistry() {
+    const auto subKey{L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App " + std::to_wstring(gameSteamAppId)};
+    RegKey reg{HKEY_LOCAL_MACHINE, subKey, 0, KEY_READ | KEY_WOW64_32KEY};
+    if (auto installPath{reg.queryString(L"InstallPath")}) {
+        return std::make_optional(*installPath);
+    }
+    return std::nullopt;
+}
+
 std::optional<std::filesystem::path> getGameInstallDir() {
+    if (SteamApi::isSteamRunning()) {
+        SteamApi steam;
+        if (steam.isOk()) {
+            if (steam.isAppInstalled(gameSteamAppId)) {
+                return {steam.getAppInstallDir(gameSteamAppId)};
+            }
+        }
+    }
+
+    if (auto installDirFromReg{getGameInstallDirFromRegistry()}) {
+        return installDirFromReg;
+    }
+
     if (auto steamDir{getSteamAppsDir()}) {
         return std::make_optional(*steamDir / "Dying Light 2");
     }
+
     return std::nullopt;
 }
 

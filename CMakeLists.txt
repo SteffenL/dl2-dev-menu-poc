@@ -32,6 +32,9 @@ FetchContent_Declare(minhook
 )
 FetchContent_MakeAvailable(minhook)
 
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+add_subdirectory(steam)
 add_subdirectory(core)
 add_subdirectory(wrapper)
 add_subdirectory(setup)
