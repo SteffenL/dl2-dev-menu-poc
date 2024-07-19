@@ -1,10 +1,12 @@
 #include "core/hooks.hpp"
+#include "core/game.hpp"
 #include "core/string.hpp"
 
 #include "core/log.hpp"
 #include "core/state.hpp"
 #include "core/xinput.hpp"
 
+#include <libloaderapi.h>
 #include <windows.h>
 #include <MinHook.h>
 
@@ -15,13 +17,22 @@ using GetProcAddress_t = FARPROC(WINAPI*)(HMODULE hModule, LPCSTR lpProcName);
 GetProcAddress_t g_origGetProcAddress{};
 
 HMODULE WINAPI detourLoadLibraryExW(LPCWSTR lpLibFileName, HANDLE hFile, DWORD dwFlags) {
-    std::filesystem::path libfileName{lpLibFileName};
-    log("LoadLibraryExW: ", charStringFromChar8String(libfileName.u8string()));
-    if (libfileName.filename() == "gamedll_ph_x64_rwe.dll") {
+    std::filesystem::path libFileName{lpLibFileName};
+    log("LoadLibraryExW: ", charStringFromChar8String(libFileName.u8string()));
+    if (libFileName.filename() == "gamedll_ph_x64_rwe.dll") {
         log("Game DLL is being loaded.");
         auto module{g_origLoadLibraryExW(lpLibFileName, hFile, dwFlags)};
         AppState::get().notifyOnGameDllLoaded();
         return module;
+    } else if (libFileName.filename() == "D3D12Core.dll") {
+        log("Redirecting loading of D3D12Core.");
+        if (const auto binDir{getGameBinDir()}) {
+            const auto newPath{*binDir / libFileName.filename()};
+            auto module{g_origLoadLibraryExW(newPath.c_str(), hFile, dwFlags)};
+            return module;
+        } else {
+            log("Unable to get game bin directory.");
+        }
     }
     return g_origLoadLibraryExW(lpLibFileName, hFile, dwFlags);
 }

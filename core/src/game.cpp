@@ -92,6 +92,13 @@ std::optional<std::filesystem::path> getGameInstallDir() {
     return std::nullopt;
 }
 
+std::optional<std::filesystem::path> getGameBinDir() {
+    if (auto installDir{getGameInstallDir()}) {
+        return std::make_optional(*installDir / "ph" / "work" / "bin" / "x64");
+    }
+    return std::nullopt;
+}
+
 std::optional<std::filesystem::path> getGameDevToolsBinDir() {
     if (auto gameDir{getGameInstallDir()}) {
         return std::make_optional(*gameDir / "DevTools" / "bin");
