@@ -9,6 +9,12 @@
 #include <windows.h>
 #include <dbghelp.h>
 
+constexpr const unsigned int gameSteamAppId{534380};
+
+void setGameSteamAppId() {
+    setEnv("SteamAppId", std::to_string(gameSteamAppId));
+}
+
 void setup() {
     log("Disclaimer: This is only a proof of concept for using the developer menu in Dying Light 2 (tested v1.17.2).");
     log("Author: Steffen André Langnes - www.steffenl.com");

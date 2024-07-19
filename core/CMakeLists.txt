@@ -5,7 +5,6 @@ target_sources(core PRIVATE
     src/game.cpp
     src/hooks.cpp
     src/log.cpp
-    src/main.cpp
     src/registry.cpp
     src/state.cpp
     src/string.cpp
@@ -13,4 +12,4 @@ target_sources(core PRIVATE
 )
 
 target_include_directories(core PUBLIC include)
-target_link_libraries(core PRIVATE dbghelp minhook steam)
+target_link_libraries(core PRIVATE dbghelp minhook)

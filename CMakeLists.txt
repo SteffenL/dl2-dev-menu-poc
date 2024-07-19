@@ -34,8 +34,10 @@ FetchContent_MakeAvailable(minhook)
 
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-add_subdirectory(steam)
 add_subdirectory(core)
+add_subdirectory(steam)
+add_subdirectory(steam_game)
+add_subdirectory(main)
 add_subdirectory(wrapper)
 add_subdirectory(setup)
 add_subdirectory(packaging)

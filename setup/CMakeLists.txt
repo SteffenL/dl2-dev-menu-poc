@@ -2,7 +2,7 @@ add_executable(setup)
 target_sources(setup PRIVATE
     src/main.cpp
 )
-target_link_libraries(setup PRIVATE core steam)
+target_link_libraries(setup PRIVATE core steam steam_game)
 
 add_custom_command(TARGET setup POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:setup> $<TARGET_FILE_DIR:setup>

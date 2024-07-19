@@ -26,13 +26,9 @@ HMODULE WINAPI detourLoadLibraryExW(LPCWSTR lpLibFileName, HANDLE hFile, DWORD d
         return module;
     } else if (libFileName.filename() == "D3D12Core.dll") {
         log("Redirecting loading of D3D12Core.");
-        if (const auto binDir{getGameBinDir()}) {
-            const auto newPath{*binDir / libFileName.filename()};
-            auto module{g_origLoadLibraryExW(newPath.c_str(), hFile, dwFlags)};
-            return module;
-        } else {
-            log("Unable to get game bin directory.");
-        }
+        const auto newPath{getMainBinDir() / libFileName.filename()};
+        auto module{g_origLoadLibraryExW(newPath.c_str(), hFile, dwFlags)};
+        return module;
     }
     return g_origLoadLibraryExW(lpLibFileName, hFile, dwFlags);
 }

@@ -3,6 +3,7 @@
 #include "core/string.hpp"
 #include "core/system.hpp"
 #include "steam/SteamApi.hpp"
+#include "steam_game/integration.hpp"
 
 #include <filesystem>
 #include <iostream>
