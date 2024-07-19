@@ -6,31 +6,46 @@
 #include "core/state.hpp"
 #include "core/xinput.hpp"
 
-#include <libloaderapi.h>
 #include <windows.h>
 #include <MinHook.h>
 
-using LoadLibraryExW_t = HMODULE(WINAPI*)(LPCWSTR lpLibFileName, HANDLE hFile, DWORD dwFlags);
-LoadLibraryExW_t g_origLoadLibraryExW{};
+typedef struct _UNICODE_STRING {
+    USHORT Length;
+    USHORT MaximumLength;
+    _Field_size_bytes_part_opt_(MaximumLength, Length) PWCH Buffer;
+} UNICODE_STRING, *PUNICODE_STRING;
+
+using LdrLoadDll_t = NTSTATUS(NTAPI*)(
+    _In_opt_ PWSTR DllPath,
+    _In_opt_ PULONG DllCharacteristics,
+    _In_ PUNICODE_STRING DllName,
+    _Out_ PVOID* DllHandle);
+
+LdrLoadDll_t g_origLdrLoadDll{};
 
 using GetProcAddress_t = FARPROC(WINAPI*)(HMODULE hModule, LPCSTR lpProcName);
 GetProcAddress_t g_origGetProcAddress{};
 
-HMODULE WINAPI detourLoadLibraryExW(LPCWSTR lpLibFileName, HANDLE hFile, DWORD dwFlags) {
-    std::filesystem::path libFileName{lpLibFileName};
-    log("LoadLibraryExW: ", charStringFromChar8String(libFileName.u8string()));
-    if (libFileName.filename() == "gamedll_ph_x64_rwe.dll") {
+NTSTATUS NTAPI detourLdrLoadDll(PWSTR DllPath, PULONG DllCharacteristics, PUNICODE_STRING DllName, PVOID* DllHandle) {
+    const std::wstring_view libName{DllName->Buffer, DllName->Length / sizeof(DllName->Buffer[0])};
+    const std::filesystem::path libPath{libName};
+    log("LdrLoadDll: ", charStringFromChar8String(libPath.u8string()));
+    if (libPath.filename() == "gamedll_ph_x64_rwe.dll") {
         log("Game DLL is being loaded.");
-        auto module{g_origLoadLibraryExW(lpLibFileName, hFile, dwFlags)};
+        auto result{g_origLdrLoadDll(DllPath, DllCharacteristics, DllName, DllHandle)};
         AppState::get().notifyOnGameDllLoaded();
-        return module;
-    } else if (libFileName.filename() == "D3D12Core.dll") {
+        return result;
+    } else if (libPath.filename() == "D3D12Core.dll") {
         log("Redirecting loading of D3D12Core.");
-        const auto newPath{getMainBinDir() / libFileName.filename()};
-        auto module{g_origLoadLibraryExW(newPath.c_str(), hFile, dwFlags)};
-        return module;
+        const auto newPath{(getMainBinDir() / libPath.filename()).wstring()};
+        const auto newLengthInBytes{static_cast<USHORT>(newPath.size() * sizeof(DllName->Buffer[0]))};
+        UNICODE_STRING newPathUnicode{
+            .Length = newLengthInBytes,
+            .MaximumLength = newLengthInBytes,
+            .Buffer = const_cast<wchar_t*>(newPath.c_str())};
+        return g_origLdrLoadDll(DllPath, DllCharacteristics, &newPathUnicode, DllHandle);
     }
-    return g_origLoadLibraryExW(lpLibFileName, hFile, dwFlags);
+    return g_origLdrLoadDll(DllPath, DllCharacteristics, DllName, DllHandle);
 }
 
 FARPROC WINAPI detourGetProcAddress(HMODULE hModule, LPCSTR lpProcName) {
@@ -51,23 +66,28 @@ void setupGameDllLoadHook() {
         return;
     }
     if (!([]() -> bool {
-            if (::MH_CreateHook(std::bit_cast<LPVOID>(&::LoadLibraryExW), std::bit_cast<LPVOID>(&detourLoadLibraryExW), std::bit_cast<LPVOID*>(&g_origLoadLibraryExW)) == MH_OK) {
-                if (::MH_EnableHook(std::bit_cast<LPVOID>(&::LoadLibraryExW)) == MH_OK) {
-                    return true;
+            const auto ntdllPath{getSystemDir() / "ntdll.dll"};
+            if (auto ntdllHandle{::GetModuleHandleW(ntdllPath.c_str())}) {
+                if (auto fnLdrLoadDll{g_origGetProcAddress ? g_origGetProcAddress(ntdllHandle, "LdrLoadDll") : ::GetProcAddress(ntdllHandle, "LdrLoadDll")}) {
+                    if (::MH_CreateHook(fnLdrLoadDll, &detourLdrLoadDll, std::bit_cast<LPVOID*>(&g_origLdrLoadDll)) == MH_OK) {
+                        if (::MH_EnableHook(fnLdrLoadDll) == MH_OK) {
+                            return true;
+                        }
+                    }
                 }
             }
             return false;
         })()) {
-        log("Unable to hook LoadLibraryW.");
+        log("Unable to hook LdrLoadDll.");
     }
     if (!([]() -> bool {
-            if (::MH_CreateHook(std::bit_cast<LPVOID>(&::GetProcAddress), std::bit_cast<LPVOID>(&detourGetProcAddress), std::bit_cast<LPVOID*>(&g_origGetProcAddress)) == MH_OK) {
+            if (::MH_CreateHook(&::GetProcAddress, &detourGetProcAddress, std::bit_cast<LPVOID*>(&g_origGetProcAddress)) == MH_OK) {
                 if (::MH_EnableHook(std::bit_cast<LPVOID>(&::GetProcAddress)) == MH_OK) {
                     return true;
                 }
             }
             return false;
         })()) {
-        log("Unable to hook LoadLibraryW.");
+        log("Unable to hook GetProcAddress.");
     }
 }
