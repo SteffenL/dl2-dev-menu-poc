@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 
 project(
     dl2_dev_menu
-    VERSION 0.3.0
+    VERSION 0.4.0
     DESCRIPTION "A proof of concept for using the developer menu in the Steam version of the Dying Light 2 game by Techland."
     HOMEPAGE_URL https://www.steffenl.com/
     LANGUAGES CXX
