@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 0.3.0 - 2024-07-19
+
+### Added
+
+- Steam integration for the installer for more accurate detection of the game's install folder.
+- Redirect loading of D3D12Core.dll to avoid a startup issue when using D3D12 rendering.
+
+### Removed
+
+- Disabled some spammy logging.
+
 ## 0.2.0 - 2024-07-18
 
 ### Added
