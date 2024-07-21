@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Changed
+
+- Improved compatibility by attempting to redirect all DLLs that fail to load.
+
 ## 0.4.0 - 2024-07-19
 
 ### Changed
