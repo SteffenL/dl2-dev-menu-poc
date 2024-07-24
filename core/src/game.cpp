@@ -6,6 +6,7 @@
 #include "core/string.hpp"
 #include "core/system.hpp"
 
+#include <fstream>
 #include <string>
 
 std::filesystem::path getMainBinDir() {
@@ -53,6 +54,37 @@ void CheckVideoSetting() {
     } else {
         log("Failed to get the Documents folder path.");
     }
+}
+
+bool ReplaceRendererMode(const std::wstring& filePath, const std::wstring& from, const std::wstring& to) {
+    std::wifstream fileIn(filePath);
+    if (!fileIn.is_open()) {
+        return false;
+    }
+
+    std::wstringstream buffer;
+    buffer << fileIn.rdbuf();
+    std::wstring content = buffer.str();
+    fileIn.close();
+
+    size_t startPos = content.find(from);
+    if (startPos == std::wstring::npos) {
+        return false;
+    }
+
+    while (startPos != std::wstring::npos) {
+        content.replace(startPos, from.length(), to);
+        startPos = content.find(from, startPos + to.length());
+    }
+
+    std::wofstream fileOut(filePath);
+    if (!fileOut.is_open()) {
+        return false;
+    }
+
+    fileOut << content;
+    fileOut.close();
+    return true;
 }
 
 void setupCheats() {
