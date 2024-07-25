@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <functional>
 #include <span>
 #include <string>
 #include <vector>
@@ -17,3 +18,4 @@ void setWorkingDirectory(const std::filesystem::path& dir);
 void createShellShortcut(const std::filesystem::path& targetPath, const std::filesystem::path& directory, const std::string& label, const std::string& args = {});
 bool shellShortcutExists(const std::filesystem::path& directory, const std::string& label);
 void removeShellShortcut(const std::filesystem::path& directory, const std::string& label);
+void makeProgramPatchScope(std::span<uint8_t>& range, std::function<void()> cb);

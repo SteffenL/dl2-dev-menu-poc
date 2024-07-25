@@ -2,6 +2,7 @@
 #include "core/string.hpp"
 
 #include "ScopedCoInitialize.hpp"
+#include "ScopedVirtualProtect.hpp"
 
 #include <array>
 #include <filesystem>
@@ -117,4 +118,10 @@ bool shellShortcutExists(const std::filesystem::path& directory, const std::stri
 
 void removeShellShortcut(const std::filesystem::path& directory, const std::string& label) {
     std::filesystem::remove(directory / makeShortcutFileName(label));
+}
+
+void makeProgramPatchScope(std::span<uint8_t>& range, std::function<void()> cb) {
+    ScopedVirtualProtect protectScope{range.data(), range.size(), PAGE_EXECUTE_READWRITE};
+    cb();
+    ::FlushInstructionCache(::GetCurrentProcess(), range.data(), range.size());
 }

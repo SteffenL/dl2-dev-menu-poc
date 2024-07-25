@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Added
+
+- Patch for game v1.17.3 provided by SDavidLee for bringing back the "Developer Menu List" button.
+
 ## 0.5.0 - 2024-07-21
 
 ### Changed
