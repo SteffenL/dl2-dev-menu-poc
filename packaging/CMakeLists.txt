@@ -10,5 +10,6 @@ set(CPACK_GENERATOR ZIP)
 install(TARGETS wrapper DESTINATION files)
 install(TARGETS setup DESTINATION .)
 install(FILES readme.txt DESTINATION . COMPONENT dl2_dev_menu)
+install(FILES ${CMAKE_SOURCE_DIR}/CHANGELOG.md DESTINATION . RENAME changelog.txt COMPONENT dl2_dev_menu)
 
 include(CPack)
